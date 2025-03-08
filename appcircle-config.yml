@@ -1,0 +1,30 @@
+version: 1.0
+
+workflows:
+  default:
+    name: Default Android Build Workflow
+    steps:
+      - name: Git Clone
+        uses: appcircle/git-clone@v1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Gradle Wrapper Setup
+        run: |
+          chmod +x ./gradlew
+          ./gradlew wrapper
+
+      - name: Gradle Build
+        run: |
+          ./gradlew clean assembleDebug
+        env:
+          GRADLE_USER_HOME: ~/.gradle
+
+      - name: Export APK
+        uses: appcircle/export-build-artifacts@v1
+        with:
+          path: "app/build/outputs/apk/debug/app-debug.apk"
